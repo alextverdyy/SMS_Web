@@ -1,357 +1,470 @@
 /* --- General Reset and Base Styles --- */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-  
-  body {
-    font-family: 'Inter', Arial, sans-serif;
-    background-color: #24273A; /* Catppuccin Mocha Background */
-    color: #CDD6F4; /* Catppuccin Mocha Text */
-    line-height: 1.6;
-    font-size: 1rem;
-  }
-  
-  .container {
-    max-width: 1200px;
-    margin: 20px auto;
-    padding: 20px;
-    background: #1A1D2B; /* Catppuccin Mocha Panel */
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
-  
-  h1,
-  h2 {
-    color: #ABB2BF; /* Catppuccin Mocha Subtext */
-    margin-bottom: 15px;
-    font-weight: bold;
-  }
-  
-  .section {
-    margin-bottom: 30px;
-  }
-  
-  .form-group {
-    margin-bottom: 15px;
-    display: flex;
-    flex-direction: column;
-  }
-  
-  label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-    color: #CDD6F4; /* Catppuccin Mocha Text */
-  }
-  
-  input[type="number"],
-  input[type="text"] {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #454752; /* Catppuccin Mocha Selection */
-    border-radius: 4px;
-    background-color: #1A1D2B; /* Catppuccin Mocha Panel */
-    color: #CDD6F4; /* Catppuccin Mocha Text */
-    box-sizing: border-box;
-  }
-  
-  button {
-    padding: 10px 20px;
-    background-color: #8FA1B3; /* Catppuccin Mocha Blue */
-    color: #1A1D2B; /* Catppuccin Mocha Panel */
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    margin-top: 10px;
-  }
-  
-  button:hover {
-    background-color: #9DA5B5; /* Catppuccin Mocha Blue Darker */
-  }
-  
-  canvas {
-    max-width: 100%;
-    height: auto;
-  }
-  
-  /* --- Tabs Styling --- */
-  .tab-container {
-    width: 100%;
-  }
-  
-  .tab-headers {
-    list-style: none;
-    padding: 0;
-    margin: 0 0 20px 0;
-    display: flex;
-    border-bottom: 2px solid #454752; /* Catppuccin Mocha Selection */
-  }
-  
-  .tab-headers li {
-    padding: 10px 20px;
-    cursor: pointer;
-    background-color: #1A1D2B; /* Catppuccin Mocha Panel */
-    color: #ABB2BF; /* Catppuccin Mocha Subtext */
-    border-radius: 4px 4px 0 0;
-    margin-right: 5px;
-    border: 1px solid #454752; /* Catppuccin Mocha Selection */
-    border-bottom: none;
-    position: relative;
-    bottom: -2px;
-    transition: background-color 0.3s ease, color 0.3s ease;
-  }
-  
-  .tab-headers li.active {
-    background-color: #313244; /* Catppuccin Mocha Surface0 */
-    color: #CDD6F4; /* Catppuccin Mocha Text */
-    border-bottom: 2px solid #313244; /* Catppuccin Mocha Surface0 */
-  }
-  
-  .tab-headers li:hover:not(.active) {
-    background-color: #45475A; /* Catppuccin Mocha Surface1 */
-    color: #BAC2DE; /* Catppuccin Mocha Subtext1 */
-  }
-  
-  .tab-content {
-    display: none;
-    padding: 20px;
-    border: 1px solid #454752; /* Catppuccin Mocha Selection */
-    border-top: none;
-    border-radius: 0 0 8px 8px;
-    background-color: #1E1E2E; /* Catppuccin Mocha Mantle */
-  }
-  
-  .tab-content.active {
-    display: block;
-  }
-  
-  /* --- Motor List Styling --- */
-  #motor-list-content {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 15px;
-  }
-  
-  .motor-card {
-    background-color: #1A1D2B; /* Catppuccin Mocha Panel */
-    padding: 15px;
-    border-radius: 6px;
-    border: 1px solid #454752; /* Catppuccin Mocha Selection */
-  }
-  
-  .motor-card h3 {
-    margin-top: 0;
-    color: #8FA1B3; /* Catppuccin Mocha Blue */
-    border-bottom: 1px solid #454752; /* Catppuccin Mocha Selection */
-    padding-bottom: 5px;
-    margin-bottom: 10px;
-    word-wrap: break-word;
-  }
-  
-  .motor-card p {
-    margin: 5px 0;
-    font-size: 0.9em;
-  }
-  
-  .motor-card p strong {
-    color: #A6ADC8; /* Catppuccin Mocha Subtext0 */
-  }
-  
-  /* --- Add Motor Form Styling --- */
-  #add-motor-form {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 15px 20px;
-  }
-  
-  #add-motor-form .form-group {
-    margin-bottom: 0;
-  }
-  
-  #add-motor-form button {
-    grid-column: 1 / -1;
-    justify-self: start;
-    width: auto;
-  }
-  
-  #add-motor-status {
-    margin-top: 15px;
-    font-weight: bold;
-    min-height: 1.2em;
-  }
-  
-  .status-success {
-    color: #A6E3A1; /* Catppuccin Mocha Green */
-  }
-  
-  .status-error {
-    color: #F38BA8; /* Catppuccin Mocha Red */
-  }
-  
-  /* --- Filter and Selection Table Styling --- */
-  .motor-selector-container {
-    position: relative;
-    /* Needed for absolute positioning of suggestions */
-  }
-  
-  #motor-suggestions {
-    position: absolute;
-    background-color: #313244; /* Catppuccin Mocha Surface0 */
-    border: 1px solid #454752; /* Catppuccin Mocha Selection */
-    border-top: none;
-    border-radius: 0 0 4px 4px;
-    width: 100%;
-    /* Match input width */
-    max-height: 200px;
-    overflow-y: auto;
-    z-index: 10;
-    /* Ensure it's above other elements */
-    box-sizing: border-box;
-    display: none;
-    /* Hidden by default */
-  }
-  
-  #motor-suggestions div {
-    padding: 8px;
-    cursor: pointer;
-    color: #CDD6F4; /* Catppuccin Mocha Text */
-  }
-  
-  #motor-suggestions div:hover {
-    background-color: #45475A; /* Catppuccin Mocha Surface1 */
-    color: #BAC2DE; /* Catppuccin Mocha Subtext1 */
-  }
-  
-  #selected-motors-table {
-    width: 100%;
-    margin-top: 20px;
-    border-collapse: collapse;
-    table-layout: fixed;
-    /* Helps with consistent column widths */
-  }
-  
-  #selected-motors-table th,
-  #selected-motors-table td {
-    border: 1px solid #454752; /* Catppuccin Mocha Selection */
-    padding: 8px 10px;
-    text-align: left;
-    font-size: 0.9em;
-    word-wrap: break-word;
-    /* Prevent long text overflow */
-  }
-  
-  #selected-motors-table th {
-    background-color: #313244; /* Catppuccin Mocha Surface0 */
-    color: #A6ADC8; /* Catppuccin Mocha Subtext0 */
-    font-weight: bold;
-  }
-  
-  #selected-motors-table td {
-    background-color: #1E1E2E; /* Catppuccin Mocha Mantle */
-    color: #CDD6F4; /* Catppuccin Mocha Text */
-  }
-  
-  #selected-motors-table tr:nth-child(even) td {
-    background-color: #1A1D2B; /* Catppuccin Mocha Panel */
-  }
-  
-  #selected-motors-table .action-cell {
-    width: 80px;
-    /* Fixed width for the remove button column */
-    text-align: center;
-  }
-  
-  #selected-motors-table button.remove-motor-btn {
-    padding: 4px 8px;
-    background-color: #F38BA8; /* Catppuccin Mocha Red */
-    color: #1A1D2B; /* Catppuccin Mocha Panel */
-    font-size: 0.8em;
-    margin: 0;
-    /* Override default button margin */
-  }
-  
-  #selected-motors-table button.remove-motor-btn:hover {
-    background-color: #EBA0AC; /* Lighter Red */
-  }
-  
-  /* --- Chart Styling --- */
-  .chart-container {
-    margin-top: 20px;
-  }
-  
-  .chart-container canvas {
-    max-width: 100%;
-    height: auto;
-  }
-  
-  .chartjs-render-monitor {
-    background-color: transparent !important;
-  }
-  
-  .chartjs-grid {
-    stroke: #454752; /* Catppuccin Mocha Selection */
-  }
-  
-  .chartjs-tooltip {
-    background-color: #313244; /* Catppuccin Mocha Surface0 */
-    color: #CDD6F4; /* Catppuccin Mocha Text */
-    border-radius: 4px;
-    padding: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  }
-  
-  .chartjs-tooltip-text {
-    font-size: 0.9em;
-  }
-  
-  /* --- Additional Enhancements --- */
-  hr {
-    border: none;
-    height: 1px;
-    background-color: #454752; /* Catppuccin Mocha Selection */
-    margin: 20px 0;
-  }
-  
-  input:focus,
-  textarea:focus {
-    outline: none;
-    border-color: #8FA1B3; /* Catppuccin Mocha Blue */
-  }
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Open Sans', sans-serif;
+  background-color: #24273A;
+  /* Catppuccin Mocha Background */
+  color: #CDD6F4;
+  /* Catppuccin Mocha Text */
+  line-height: 1.6;
+  font-size: 1rem;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 20px auto;
+  padding: 20px;
+  background: #1A1D2B;
+  /* Catppuccin Mocha Panel */
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+h1,
+h2,
+h3 {
+  color: #ABB2BF;
+  /* Catppuccin Mocha Subtext */
+  margin-bottom: 15px;
+  font-weight: bold;
+  font-family: 'Inter', sans-serif;
+}
+
+.section {
+  margin-bottom: 30px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #CDD6F4;
+  /* Catppuccin Mocha Text */
+}
+
+input[type="number"],
+input[type="text"] {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #454752;
+  /* Catppuccin Mocha Selection */
+  border-radius: 4px;
+  background-color: #1A1D2B;
+  /* Catppuccin Mocha Panel */
+  color: #CDD6F4;
+  /* Catppuccin Mocha Text */
+  box-sizing: border-box;
+}
+
+button {
+  padding: 10px 20px;
+  background-color: #8FA1B3;
+  /* Catppuccin Mocha Blue */
+  color: #1A1D2B;
+  /* Catppuccin Mocha Panel */
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 10px;
+}
+
+button:hover {
+  background-color: #9DA5B5;
+  /* Catppuccin Mocha Blue Darker */
+}
+
+canvas {
+  max-width: 100%;
+  height: auto;
+}
+
+/* --- Tabs Styling --- */
+.tab-container {
+  width: 100%;
+}
+
+.tab-headers {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 20px 0;
+  display: flex;
+  border-bottom: 2px solid #454752;
+  /* Catppuccin Mocha Selection */
+}
+
+.tab-headers li {
+  padding: 10px 20px;
+  cursor: pointer;
+  background-color: #1A1D2B;
+  /* Catppuccin Mocha Panel */
+  color: #ABB2BF;
+  /* Catppuccin Mocha Subtext */
+  border-radius: 4px 4px 0 0;
+  margin-right: 5px;
+  border: 1px solid #454752;
+  /* Catppuccin Mocha Selection */
+  border-bottom: none;
+  position: relative;
+  bottom: -2px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.tab-headers li.active {
+  background-color: #313244;
+  /* Catppuccin Mocha Surface0 */
+  color: #CDD6F4;
+  /* Catppuccin Mocha Text */
+  border-bottom: 2px solid #313244;
+  /* Catppuccin Mocha Surface0 */
+}
+
+.tab-headers li:hover:not(.active) {
+  background-color: #45475A;
+  /* Catppuccin Mocha Surface1 */
+  color: #BAC2DE;
+  /* Catppuccin Mocha Subtext1 */
+}
+
+.tab-content {
+  display: none;
+  padding: 20px;
+  border: 1px solid #454752;
+  /* Catppuccin Mocha Selection */
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+/* --- Motor List Styling --- */
+#motor-list-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 15px;
+}
+
+.motor-card {
+  background-color: #1A1D2B;
+  /* Catppuccin Mocha Panel */
+  padding: 15px;
+  border-radius: 6px;
+  border: 1px solid #454752;
+  /* Catppuccin Mocha Selection */
+  transition: all 0.3s ease-in-out;
+  cursor: pointer;
+}
+
+.in-simulation {
+  background-color: #313244;
+  /* Catppuccin Mocha Surface */
+  border-color: #F9E2AF;
+  /* Catppuccin Mocha Yellow  */
+  box-shadow: 0 4px 6px rgba(50, 50, 93, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease-in-out;
+}
+
+.motor-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 10px rgba(50, 50, 93, 0.15), 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.motor-card h3 {
+  margin-top: 0;
+  color: #8FA1B3;
+  /* Catppuccin Mocha Blue */
+  border-bottom: 1px solid #454752;
+  /* Catppuccin Mocha Selection */
+  padding-bottom: 5px;
+  margin-bottom: 10px;
+  word-wrap: break-word;
+}
+
+.motor-card p {
+  margin: 5px 0;
+  font-size: 0.9em;
+}
+
+.motor-card p strong {
+  color: #A6ADC8;
+  /* Catppuccin Mocha Subtext0 */
+}
+
+/* --- Add Motor Form Styling --- */
+#add-motor-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px 20px;
+}
+
+#add-motor-form .form-group {
+  margin-bottom: 0;
+}
+
+#add-motor-form button {
+  grid-column: 1 / -1;
+  justify-self: start;
+  width: auto;
+}
+
+#add-motor-status {
+  margin-top: 15px;
+  font-weight: bold;
+  min-height: 1.2em;
+}
+
+.status-success {
+  color: #A6E3A1;
+  /* Catppuccin Mocha Green */
+}
+
+.status-error {
+  color: #F38BA8;
+  /* Catppuccin Mocha Red */
+}
+
+/* --- Filter and Selection Table Styling --- */
+.motor-selector-container {
+  position: relative;
+  /* Needed for absolute positioning of suggestions */
+}
+
+#motor-suggestions {
+  position: absolute;
+  background-color: #313244;
+  /* Catppuccin Mocha Surface0 */
+  border: 1px solid #454752;
+  /* Catppuccin Mocha Selection */
+  border-top: none;
+  border-radius: 0 0 4px 4px;
+  width: 100%;
+  /* Match input width */
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 10;
+  /* Ensure it's above other elements */
+  box-sizing: border-box;
+  display: none;
+  /* Hidden by default */
+}
+
+#motor-suggestions div {
+  padding: 8px;
+  cursor: pointer;
+  color: #CDD6F4;
+  /* Catppuccin Mocha Text */
+}
+
+#motor-suggestions div:hover {
+  background-color: #45475A;
+  /* Catppuccin Mocha Surface1 */
+  color: #BAC2DE;
+  /* Catppuccin Mocha Subtext1 */
+}
+
+#selected-motors-table {
+  width: 100%;
+  margin-top: 20px;
+  border-collapse: collapse;
+  table-layout: fixed;
+  /* Helps with consistent column widths */
+}
+
+#selected-motors-table th,
+#selected-motors-table td {
+  border: 1px solid #454752;
+  /* Catppuccin Mocha Selection */
+  padding: 8px 10px;
+  text-align: left;
+  font-size: 0.9em;
+  word-wrap: break-word;
+  /* Prevent long text overflow */
+}
+
+#selected-motors-table th {
+  background-color: #313244;
+  /* Catppuccin Mocha Surface0 */
+  color: #A6ADC8;
+  /* Catppuccin Mocha Subtext0 */
+  font-weight: bold;
+}
+
+#selected-motors-table td {
+  background-color: #1E1E2E;
+  /* Catppuccin Mocha Mantle */
+  color: #CDD6F4;
+  /* Catppuccin Mocha Text */
+}
+
+#selected-motors-table tr:nth-child(even) td {
+  background-color: #1A1D2B;
+  /* Catppuccin Mocha Panel */
+}
+
+#selected-motors-table .action-cell {
+  width: 80px;
+  /* Fixed width for the remove button column */
+  text-align: center;
+}
+
+#selected-motors-table button.remove-motor-btn {
+  padding: 4px 8px;
+  background-color: #F38BA8;
+  /* Catppuccin Mocha Red */
+  color: #1A1D2B;
+  /* Catppuccin Mocha Panel */
+  font-size: 0.8em;
+  margin: 0;
+  /* Override default button margin */
+}
+
+#selected-motors-table button.remove-motor-btn:hover {
+  background-color: #EBA0AC;
+  /* Lighter Red */
+}
+
+/* --- Chart Styling --- */
+.chart-container {
+  margin-top: 20px;
+}
+
+.chart-container canvas {
+  max-width: 100%;
+  height: auto;
+}
+
+.chartjs-render-monitor {
+  background-color: transparent !important;
+}
+
+.chartjs-grid {
+  stroke: #454752;
+  /* Catppuccin Mocha Selection */
+}
+
+.chartjs-tooltip {
+  background-color: #313244;
+  /* Catppuccin Mocha Surface0 */
+  color: #CDD6F4;
+  /* Catppuccin Mocha Text */
+  border-radius: 4px;
+  padding: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.chartjs-tooltip-text {
+  font-size: 0.9em;
+}
+
+/* --- Additional Enhancements --- */
+hr {
+  border: none;
+  height: 1px;
+  background-color: #454752;
+  /* Catppuccin Mocha Selection */
+  margin: 20px 0;
+}
+
+input:focus,
+textarea:focus {
+  outline: none;
+  border-color: #8FA1B3;
+  /* Catppuccin Mocha Blue */
+}
 
 /* --- Acknowledgements Section Styles (Optional) --- */
 .acknowledgements {
-    margin-top: 40px; /* Add some space above */
-    padding-top: 20px; /* Add padding inside */
-    border-top: 1px solid #454752; /* Separator line */
-    font-size: 0.9em;
-    color: #A6ADC8; /* Subtext0 */
- }
+  margin-top: 40px;
+  /* Add some space above */
+  padding-top: 20px;
+  /* Add padding inside */
+  border-top: 1px solid #454752;
+  /* Separator line */
+  font-size: 0.9em;
+  color: #A6ADC8;
+  /* Subtext0 */
+}
 
- .acknowledgements h2 {
-    color: #A6ADC8; /* Subtext0 */
-    border-bottom: none; /* Remove double border */
-    margin-bottom: 15px;
- }
+.acknowledgements h2 {
+  color: #A6ADC8;
+  /* Subtext0 */
+  border-bottom: none;
+  /* Remove double border */
+  margin-bottom: 15px;
+}
 
- .acknowledgements ul {
-    list-style: disc;
-    margin-left: 20px;
-    margin-bottom: 15px;
- }
+.acknowledgements ul {
+  list-style: disc;
+  margin-left: 20px;
+  margin-bottom: 15px;
+}
 
- .acknowledgements li {
-    margin-bottom: 5px;
- }
+.acknowledgements li {
+  margin-bottom: 5px;
+}
 
- .acknowledgements a {
-    color: #89B4FA; /* Blue */
-    text-decoration: none;
- }
+.acknowledgements a {
+  color: #89B4FA;
+  /* Blue */
+  text-decoration: none;
+}
 
- .acknowledgements a:hover {
-    text-decoration: underline;
-    color: #74C7EC; /* Sky */
- }
+.acknowledgements a:hover {
+  text-decoration: underline;
+  color: #74C7EC;
+  /* Sky */
+}
+
+.toast-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.toast {
+  background-color: #333;
+  color: #fff;
+  padding: 15px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  font-size: 14px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  max-width: 300px;
+  word-wrap: break-word;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.toast.success {
+  background-color: #4CAF50;
+}
+
+.toast.error {
+  background-color: #F44336;
+}
+
+.toast.warning {
+  background-color: #FF9800;
+}
