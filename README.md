@@ -33,4 +33,5 @@ Contributions are welcome! Whether it's code, motor data, or feedback—open a P
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for details.
+This project is licensed under the Creative Commons Attribution-NonCommercial 4.0 International License.  
+See the [LICENSE](./LICENSE) file for more details.
