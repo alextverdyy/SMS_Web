@@ -31,7 +31,7 @@ export class URLHandler {
 
 
             // Create the URL
-            const baseUrl = window.location.origin.indexOf('localhost') === -1 ? "https://alextverdyy.github.io/SMS_Web" : window.location.origin; // Current page URL
+            const baseUrl = "https://alextverdyy.github.io" // Current page URL
 
             const shareableURL = `${baseUrl}${window.location.pathname}?data=${base64Data}`; // No encodeuricomponent here, Btoa is already safe for URL
 
