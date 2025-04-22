@@ -1,6 +1,6 @@
 // Js/ui manager.js
 
-import { debounce } from './utils.js'; // Import if necessary here too
+import { debounce, showToast } from './utils.js'; // Import if necessary here too
 
 
 export class UIManager {
@@ -23,8 +23,12 @@ export class UIManager {
         this.simulationParamsForm = document.getElementById('simulation-form'); // Assuming a parameter form
 
         this.shareButton = document.getElementById('share-simulation-btn'); // Assuming a sharing button
+        this.exportMotors = document.getElementById('export-motor-list-btn'); // Assuming a sharing button
 
         this.addMotorButton = document.getElementById('add-motor-button'); // Add Motor Form button
+
+        this.importMotorListBtn = document.getElementById('import-motor-list-btn');
+        this.importFileInput = document.getElementById('import-file-input');
 
 
         this.initializeTabs();
@@ -79,9 +83,35 @@ export class UIManager {
         
         this.simulationParamsForm.addEventListener('input', debouncedUpdateSimulation);
 
+        this.importMotorListBtn.addEventListener('click', () => {
+            this.importFileInput.click();
+        });
+        
+        this.importFileInput.addEventListener('change', async (event) => {
+            const file = event.target.files[0];
+            if (!file) return;
+        
+            try {
+                const result = await this.motorManager.importMotors(file);
+        
+                showToast(result.message, result.success ? 'success' : 'info');
+        
+                if (result.addedCount > 0) {
+                    this.displayMotorList()
+                }
+        
+            } catch (error) {
+                console.error("Import failed:", error);
+                showToast(`Import failed: ${error.message}`, 'error');
+            } finally {
+                event.target.value = null;
+            }
+        });
+
         // Share button
 
         this.shareButton.addEventListener('click', this.appCallbacks.shareSimulation);
+        this.exportMotors.addEventListener('click', this.appCallbacks.exportMotors);
 
         // Delegation of events for "stir" buttons in the table
 
@@ -102,7 +132,7 @@ export class UIManager {
 
 
     displayMotorList() {
-        this.motorListContainer.innerHTML = ''; // Clean anterior content
+        this.motorListContainer.innerHTML = '';
 
         const motors = this.motorManager.getPreconfiguredMotors();
 

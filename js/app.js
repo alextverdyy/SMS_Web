@@ -17,7 +17,8 @@ class App {
             addMotorToSimulation: this.addMotorToSimulation.bind(this),
             removeMotorFromSimulation: this.removeMotorFromSimulation.bind(this),
             updateSimulation: this.updateSimulation.bind(this),
-            shareSimulation: this.shareSimulation.bind(this) // Sharing
+            shareSimulation: this.shareSimulation.bind(this), // Sharing
+            exportMotors: this.exportMotors.bind(this)
 
         });
         this.simulation = new Simulation('torque-speed-chart'); // Graphic Canvas ID
@@ -100,6 +101,10 @@ class App {
 
     shareSimulation() {
          this.urlHandler.shareSimulationLink();
+    }
+
+    exportMotors() {
+        this.motorManager.exportMotors();
     }
 }
 

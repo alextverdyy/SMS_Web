@@ -468,3 +468,29 @@ textarea:focus {
 .toast.warning {
   background-color: #FF9800;
 }
+
+.export-btn, .import-btn {
+  background-color: #b4befe; /* Catppuccin Mocha Yellow */
+  color: #1A1D2B; /* Catppuccin Mocha Panel */
+  border: none;
+  padding: 8px 15px;
+  border-radius: 6px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+
+.export-btn:hover {
+  background-color: #F38BA8; /* Catppuccin Mocha Red */
+  color: #FFFFFF;
+}
+
+.import-btn {
+  background-color: #89B4FA; /* Catppuccin Mocha Blue */
+}
+
+.import-btn:hover {
+  background-color: #74C7EC; /* Catppuccin Mocha Sky */
+  color: #FFFFFF;
+}

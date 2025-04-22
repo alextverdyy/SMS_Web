@@ -104,6 +104,15 @@
             <!-- Tab Content: Motor List -->
             <div id="motor-list-tab" class="tab-content">
                 <h2><i class="fas fa-database"></i> Preconfigured Motors</h2>
+                <div style="margin-bottom: 10px; display: flex; gap: 10px; align-items: center;">
+                    <button id="export-motor-list-btn" class="export-btn">
+                        <i class="fas fa-download"></i> Export Motor List
+                    </button>
+                    <button id="import-motor-list-btn" class="import-btn">
+                        <i class="fas fa-upload"></i> Import Motor List
+                    </button>
+                    <input type="file" id="import-file-input" accept=".json" style="display: none;">
+                </div>
                 <div id="motor-list-content">
                     <p>Loading motor list...</p>
                 </div>
