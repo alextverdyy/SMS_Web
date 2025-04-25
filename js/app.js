@@ -1,5 +1,9 @@
 // Js/app.js
 
+/**
+ * @global {import('chart.js')} Chart
+ */
+
 import { MotorManager } from './motorManager.js';
 import { UIManager } from './uiManager.js';
 import { Simulation } from './simulation.js';
@@ -84,7 +88,7 @@ class App {
         this.motorManager.removeMotorFromSimulation(index);
         this.uiManager.updateSelectedMotorsTable();
         
-        if (this.motorManager.getMotorsForSimulation().length > 0) {
+        if (this.motorManager.getMotorsForSimulation().length >= 0) {
             this.updateSimulation(); // Recalculate all
         }
 

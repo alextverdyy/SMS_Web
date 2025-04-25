@@ -70,7 +70,7 @@
 
                         <div class="form-group">
                             <label><i class="fas fa-microchip"></i> Motors Selected for Simulation:</label>
-                            <table id="selected-motors-table">
+                            <table id="selected-motors-table" class="table">
                                 <thead>
                                     <tr>
                                         <th>Brand & Model</th>
@@ -79,14 +79,14 @@
                                         <th>Torque (N-cm)</th>
                                         <th>Inductance (mH)</th>
                                         <th>Resistance (Ω)</th>
-                                        <th class="action-cell">Action</th>
+                                        <th>Input Voltage (V)</th>
+                                        <th>Max Drive Current (A)</th>
+                                        <th>Pulley Size (Teeth)</th>
+                                        <th>Action</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    <tr>
-                                        <td colspan="7" style="text-align: center; color: #ABB2BF;">No motors selected
-                                            yet.</td>
-                                    </tr>
+                                <tbody id="selected-motors-table-body">
+                                    <!-- Motors will be dynamically added here -->
                                 </tbody>
                             </table>
                         </div>

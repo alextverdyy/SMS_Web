@@ -58,6 +58,17 @@ export class UIManager {
     }
 
     setupEventListeners() {
+
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter' || event.keyCode === 13) {
+                const target = event.target;
+                if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
+                    event.preventDefault();
+                    console.log('Enter key disabled in forms.');
+                }
+            }
+        });
+
         // Motor filter
 
         this.motorFilterInput.addEventListener('input', this.handleMotorFilterInput.bind(this));
@@ -227,32 +238,88 @@ export class UIManager {
     }
 
     updateSelectedMotorsTable() {
+        // Assuming this.selectedMotorsTableBody is the reference to the tbody element
         this.selectedMotorsTableBody.innerHTML = ''; // Clean table
 
         const motors = this.motorManager.getMotorsForSimulation();
 
         if (motors.length === 0) {
-            this.selectedMotorsTableBody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #ABB2BF;">No motors selected yet. Add one from the list or the form below.</td></tr>`;
+            this.selectedMotorsTableBody.innerHTML = `
+                <tr>
+                    <td colspan="10" style="text-align: center; color: #ABB2BF;">
+                        No motors selected yet. Add one from the list or the form below.
+                    </td>
+                </tr>
+            `;
             return;
         }
 
-        motors.forEach((motor) => { // We do not need the index here
-
+        motors.forEach((motor) => {
             const row = this.selectedMotorsTableBody.insertRow();
+            
+            // Brand & Model
             row.insertCell().textContent = motor.brandModel ?? 'N/A';
+            
+            // Step Angle
             row.insertCell().textContent = motor.stepAngleDeg ?? 'N/A';
+            
+            // Current
             row.insertCell().textContent = motor.ratedCurrentA ?? 'N/A';
+            
+            // Torque
             row.insertCell().textContent = motor.torqueNCm ?? 'N/A';
+            
+            // Inductance
             row.insertCell().textContent = motor.inductanceMH ?? 'N/A';
+            
+            // Resistance
             row.insertCell().textContent = motor.resistanceOhms ?? 'N/A';
 
+            const simulationParams = this.getSimulationParameters();
+            
+            // Input Voltage (editable)
+            const voltageCell = row.insertCell();
+            voltageCell.classList.add('editable-cell');
+            const voltageInput = document.createElement('input');
+            voltageInput.type = 'number';
+            voltageInput.value = motor.inputVoltageV ?? simulationParams.inputVoltage;
+            voltageInput.addEventListener('input', debounce(() => {
+                motor.inputVoltageV = parseFloat(voltageInput.value);
+                this.appCallbacks.updateSimulation();
+            }, 700));
+            
+            voltageCell.appendChild(voltageInput);
+            
+            // Max Drive Current (editable)
+            const maxCurrentCell = row.insertCell();
+            maxCurrentCell.classList.add('editable-cell');
+            const maxCurrentInput = document.createElement('input');
+            maxCurrentInput.type = 'number';
+            maxCurrentInput.value = motor.maxDriveCurrentA ?? simulationParams.maxCurrent;
+            maxCurrentInput.addEventListener('input', debounce(() => {
+                motor.maxDriveCurrentA = parseFloat(maxCurrentInput.value);
+                this.appCallbacks.updateSimulation();
+            }, 700));
+            maxCurrentCell.appendChild(maxCurrentInput);
+            
+            // Pulley Size (editable)
+            const pulleySizeCell = row.insertCell();
+            pulleySizeCell.classList.add('editable-cell');
+            const pulleySizeInput = document.createElement('input');
+            pulleySizeInput.type = 'number';
+            pulleySizeInput.value = motor.pulleySizeMM ?? simulationParams.pulleySize;
+            pulleySizeInput.addEventListener('input', debounce(() => {
+                motor.pulleySizeMM = parseFloat(pulleySizeInput.value);
+                this.appCallbacks.updateSimulation();
+            }, 700));
+            pulleySizeCell.appendChild(pulleySizeInput);
+            
+            // Action
             const actionCell = row.insertCell();
             actionCell.classList.add('action-cell');
             const removeButton = document.createElement('button');
             removeButton.textContent = 'Remove';
             removeButton.classList.add('remove-motor-btn');
-            // The event is handled by delegation in Setupeventlisteners
-
             actionCell.appendChild(removeButton);
         });
     }

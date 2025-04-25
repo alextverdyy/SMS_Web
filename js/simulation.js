@@ -54,7 +54,7 @@ export class Simulation {
             console.error("Chart not initialized yet.");
             return;
         }
-
+        console.log(selectedMotors)
         if (selectedMotors.length === 0) {
             showToast("Please add at least one motor to the simulation table.");
             this.torqueSpeedChart.data.labels = [];
@@ -94,13 +94,13 @@ export class Simulation {
                     motor.inductanceMH,
                     motor.resistanceOhms,
                     motor.rotorInertiaGCm2,
-                    inputVoltage,
-                    maxCurrent,
+                    motor.inputVoltageV ?? inputVoltage,
+                    motor.maxDriveCurrentA ?? maxCurrent,
                     speed
                 );
                 // Calculate torque necessary for the inertia of the engine itself
 
-                const motorInertiaTorque = this.calculateRequiredTorqueForMotor(acceleration, pulleySize, motor.rotorInertiaGCm2);
+                const motorInertiaTorque = this.calculateRequiredTorqueForMotor(acceleration, motor.pulleySizeMM ?? pulleySize, motor.rotorInertiaGCm2);
                 // Return the available torque less the necessary for your own inertia
 
                 return Math.max(0, availableTorque - motorInertiaTorque); // Ensure non -negative

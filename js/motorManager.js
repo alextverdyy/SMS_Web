@@ -72,7 +72,11 @@ export class MotorManager {
      */
     removeMotorFromSimulation(index) {
         if (index >= 0 && index < this.motorsForSimulation.length) {
-            this.motorsForSimulation[index].inSimulation = false;
+            var motor = this.motorsForSimulation[index]
+            motor.inSimulation = false;
+            motor.inputVoltageV = null;
+            motor.maxDriveCurrentA = null;
+            motor.pulleySizeMM = null;
             this.motorsForSimulation.splice(index, 1);
         }
     }
