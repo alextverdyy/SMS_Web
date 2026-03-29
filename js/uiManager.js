@@ -30,6 +30,15 @@ export class UIManager {
         this.importMotorListBtn = document.getElementById('import-motor-list-btn');
         this.importFileInput = document.getElementById('import-file-input');
 
+        // Modal elements
+        this.motorListModal = document.getElementById('motor-list-modal');
+        this.motorListBtn = document.getElementById('motor-list-btn');
+        this.modalCloseBtn = document.querySelector('.modal-close');
+
+        // Add Motor Modal elements
+        this.addMotorModal = document.getElementById('add-motor-modal');
+        this.addMotorBtn = document.getElementById('add-motor-btn');
+        this.addMotorModalCloseBtn = this.addMotorModal.querySelector('.modal-close');
 
         this.initializeTabs();
         this.setupEventListeners();
@@ -137,6 +146,38 @@ export class UIManager {
                 }
             }
         });
+
+        // Modal event listeners
+        this.motorListBtn.addEventListener('click', (event) => {
+            event.preventDefault();
+            this.showMotorListModal();
+        });
+
+        this.modalCloseBtn.addEventListener('click', () => {
+            this.hideMotorListModal();
+        });
+
+        this.motorListModal.addEventListener('click', (event) => {
+            if (event.target === this.motorListModal) {
+                this.hideMotorListModal();
+            }
+        });
+
+        // Add Motor Modal event listeners
+        this.addMotorBtn.addEventListener('click', (event) => {
+            event.preventDefault();
+            this.showAddMotorModal();
+        });
+
+        this.addMotorModalCloseBtn.addEventListener('click', () => {
+            this.hideAddMotorModal();
+        });
+
+        this.addMotorModal.addEventListener('click', (event) => {
+            if (event.target === this.addMotorModal) {
+                this.hideAddMotorModal();
+            }
+        });
     }
 
     // ---Methods to update the UI ---
@@ -158,14 +199,31 @@ export class UIManager {
         });
     }
 
+    showMotorListModal() {
+        this.displayMotorList(); // Ensure the list is up to date
+        this.motorListModal.style.display = 'block';
+    }
+
+    hideMotorListModal() {
+        this.motorListModal.style.display = 'none';
+    }
+
+    showAddMotorModal() {
+        this.addMotorModal.style.display = 'block';
+    }
+
+    hideAddMotorModal() {
+        this.addMotorModal.style.display = 'none';
+    }
+
     createMotorCard(motor) {
         const card = document.createElement('div');
         card.classList.add('motor-card');
-        card.classList.add('motor-card-' + motor.inSimulation !== undefined && motor.inSimulation ? 'in-simulation' : 'not-in-simulation');
+        card.classList.add(motor.inSimulation ? 'in-simulation' : 'not-in-simulation');
         card.id = "motor-card-id-" + motor.id;
 
         card.innerHTML = `
-            <h3>${motor.brandModel ?? 'Unnamed Motor'}</h3>
+            <h3>${motor.brand} <span class="model">${motor.model ?? ''}</span></h3>
             <p><strong>Step Angle:</strong> ${motor.stepAngleDeg ?? 'N/A'}°</p>
             <p><strong>Rated Current:</strong> ${motor.ratedCurrentA ?? 'N/A'} A</p>
             <p><strong>Holding Torque:</strong> ${motor.torqueNCm ?? 'N/A'} N-cm</p>
@@ -246,7 +304,7 @@ export class UIManager {
         if (motors.length === 0) {
             this.selectedMotorsTableBody.innerHTML = `
                 <tr>
-                    <td colspan="10" style="text-align: center; color: #ABB2BF;">
+                    <td colspan="4" style="text-align: center; color: #ABB2BF;">
                         No motors selected yet. Add one from the list or the form below.
                     </td>
                 </tr>
@@ -257,29 +315,34 @@ export class UIManager {
         motors.forEach((motor) => {
             const row = this.selectedMotorsTableBody.insertRow();
             
-            // Brand & Model
-            row.insertCell().textContent = motor.brandModel ?? 'N/A';
+            // Brand & Model with remove button
+            const modelCell = row.insertCell();
+            modelCell.classList.add('pa-cell');
+            const modelContainer = document.createElement('div');
+            modelContainer.style.display = 'flex';
+            modelContainer.style.alignItems = 'center';
+            modelContainer.style.justifyContent = 'space-between';
             
-            // Step Angle
-            row.insertCell().textContent = motor.stepAngleDeg ?? 'N/A';
+            const modelText = document.createElement('span');
+            modelText.textContent = motor.brandModel ?? 'N/A';
             
-            // Current
-            row.insertCell().textContent = motor.ratedCurrentA ?? 'N/A';
+            const removeButton = document.createElement('button');
+            removeButton.textContent = '×';
+            removeButton.classList.add('remove-motor-btn');
+            removeButton.style.fontSize = '0.8rem';
+            removeButton.style.padding = '0.2rem';
+            removeButton.style.marginLeft = '0.5rem';
+            removeButton.title = 'Remove motor';
             
-            // Torque
-            row.insertCell().textContent = motor.torqueNCm ?? 'N/A';
+            modelContainer.appendChild(modelText);
+            modelContainer.appendChild(removeButton);
+            modelCell.appendChild(modelContainer);
             
-            // Inductance
-            row.insertCell().textContent = motor.inductanceMH ?? 'N/A';
-            
-            // Resistance
-            row.insertCell().textContent = motor.resistanceOhms ?? 'N/A';
-
             const simulationParams = this.getSimulationParameters();
             
             // Input Voltage (editable)
             const voltageCell = row.insertCell();
-            voltageCell.classList.add('editable-cell');
+            voltageCell.classList.add('pa-cell', 'editable-cell');
             const voltageInput = document.createElement('input');
             voltageInput.type = 'number';
             voltageInput.value = motor.inputVoltageV ?? simulationParams.inputVoltage;
@@ -292,7 +355,7 @@ export class UIManager {
             
             // Max Drive Current (editable)
             const maxCurrentCell = row.insertCell();
-            maxCurrentCell.classList.add('editable-cell');
+            maxCurrentCell.classList.add('pa-cell', 'editable-cell');
             const maxCurrentInput = document.createElement('input');
             maxCurrentInput.type = 'number';
             maxCurrentInput.value = motor.maxDriveCurrentA ?? simulationParams.maxCurrent;
@@ -304,7 +367,7 @@ export class UIManager {
             
             // Pulley Size (editable)
             const pulleySizeCell = row.insertCell();
-            pulleySizeCell.classList.add('editable-cell');
+            pulleySizeCell.classList.add('pa-cell', 'editable-cell');
             const pulleySizeInput = document.createElement('input');
             pulleySizeInput.type = 'number';
             pulleySizeInput.value = motor.pulleySizeMM ?? simulationParams.pulleySize;
@@ -313,14 +376,6 @@ export class UIManager {
                 this.appCallbacks.updateSimulation();
             }, 700));
             pulleySizeCell.appendChild(pulleySizeInput);
-            
-            // Action
-            const actionCell = row.insertCell();
-            actionCell.classList.add('action-cell');
-            const removeButton = document.createElement('button');
-            removeButton.textContent = 'Remove';
-            removeButton.classList.add('remove-motor-btn');
-            actionCell.appendChild(removeButton);
         });
     }
 

@@ -16,157 +16,91 @@
     <script src="https://cdn.jsdelivr.net/npm/pako/dist/pako.min.js"></script>
 </head>
 
-<body>
+<body class="tool-page">
 
-    <div class="container" id="container">
-        <!-- Title -->
-        <h1><i class="fas fa-cogs"></i> Stepper Motor Simulation</h1>
-
-        <!-- Tab Container -->
-        <div class="tab-container">
-            <ul class="tab-headers">
-                <li class="active" data-tab="simulation-tab"><i class="fas fa-chart-line"></i> Simulation</li>
-                <li data-tab="motor-list-tab"><i class="fas fa-list"></i> Motor List</li>
-                <li data-tab="add-motor-tab"><i class="fas fa-plus"></i> Add Motor</li>
-            </ul>
-
-            <!-- Tab Content: Simulation -->
-            <div id="simulation-tab" class="tab-content active">
-                <!-- Section 1: Input configuration -->
-                <div class="section">
-                    <h2><i class="fas fa-sliders"></i> Simulation Parameters</h2>
+    <div class="pa-layout">
+        <div class="top-section">
+            <div class="card">
+                <div class="card-header"><span class="card-title">Simulation Parameters</span></div>
+                <div class="card-body">
                     <form id="simulation-form">
-                        <!-- Simulation parameters -->
-                        <div class="form-group">
-                            <label for="input-voltage"><i class="fas fa-bolt"></i> Input Voltage (V)</label>
-                            <input type="number" id="input-voltage" placeholder="Enter voltage" value="24" step="any">
+                        <div class="pa-setting-row">
+                            <label class="pa-setting-label" for="input-voltage">Input Voltage <span class="pa-setting-unit">V</span></label>
+                            <input class="pa-setting-input" type="number" id="input-voltage" placeholder="24" value="24" step="any">
                         </div>
-                        <div class="form-group">
-                            <label for="max-current"><i class="fas fa-battery-full"></i> Max Drive Current (A)</label>
-                            <input type="number" id="max-current" placeholder="Enter current" value="0.8" step="any">
+                        <div class="pa-setting-row">
+                            <label class="pa-setting-label" for="max-current">Max Drive Current <span class="pa-setting-unit">A</span></label>
+                            <input class="pa-setting-input" type="number" id="max-current" placeholder="0.8" value="0.8" step="any">
                         </div>
-                        <div class="form-group">
-                            <label for="pulley-size"><i class="fas fa-cog"></i> Pulley Size (Teeth)</label>
-                            <input type="number" id="pulley-size" placeholder="Enter pulley size" value="20" step="1">
+                        <div class="pa-setting-row">
+                            <label class="pa-setting-label" for="pulley-size">Pulley Size <span class="pa-setting-unit">Teeth</span></label>
+                            <input class="pa-setting-input" type="number" id="pulley-size" placeholder="20" value="20" step="1">
                         </div>
-                        <div class="form-group">
-                            <label for="acceleration"><i class="fas fa-tachometer-alt"></i> Acceleration (mm/s²)</label>
-                            <input type="number" id="acceleration" placeholder="Enter acceleration" value="20000"
-                                step="any">
+                        <div class="pa-setting-row">
+                            <label class="pa-setting-label" for="acceleration">Acceleration <span class="pa-setting-unit">mm/s²</span></label>
+                            <input class="pa-setting-input" type="number" id="acceleration" placeholder="20000" value="20000" step="any">
                         </div>
-                        <div class="form-group">
-                            <label for="toolhead-mass"><i class="fas fa-weight"></i> Toolhead + Y-axis Mass (g)</label>
-                            <input type="number" id="toolhead-mass" placeholder="Enter mass" value="500" step="any">
+                        <div class="pa-setting-row">
+                            <label class="pa-setting-label" for="toolhead-mass">Toolhead + Y Mass <span class="pa-setting-unit">g</span></label>
+                            <input class="pa-setting-input" type="number" id="toolhead-mass" placeholder="500" value="500" step="any">
                         </div>
-
-                        <!-- New: filter and motor selection table -->
-                        <div class="form-group motor-selector-container">
-                            <label for="motor-filter-input"><i class="fas fa-search"></i> Add Motor to Simulation</label>
-                            <input type="text" id="motor-filter-input" placeholder="Type to filter motors...">
-                            <div id="motor-suggestions">
-                                <!-- Suggestions will be filled here -->
-                            </div>
+                        <div class="pa-setting-row">
+                            <label class="pa-setting-label" for="motor-filter-input">Add Motor to Simulation</label>
+                            <input class="pa-setting-input" type="text" id="motor-filter-input" placeholder="Type to filter motors...">
                         </div>
-
-                        <div class="form-group">
-                            <label><i class="fas fa-microchip"></i> Motors Selected for Simulation:</label>
-                            <table id="selected-motors-table" class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Brand & Model</th>
-                                        <th>Step Angle (°)</th>
-                                        <th>Current (A)</th>
-                                        <th>Torque (N-cm)</th>
-                                        <th>Inductance (mH)</th>
-                                        <th>Resistance (Ω)</th>
-                                        <th>Input Voltage (V)</th>
-                                        <th>Max Drive Current (A)</th>
-                                        <th>Pulley Size (Teeth)</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="selected-motors-table-body">
-                                    <!-- Motors will be dynamically added here -->
-                                </tbody>
-                            </table>
-                        </div>
-                        <button type="button" id="share-simulation-btn"><i class="fa-solid fa-share-from-square"></i> Share Simulation</button>
+                        <div id="motor-suggestions" class="pa-formula-note"></div>
                     </form>
                 </div>
-
-                <!-- Section 2: Graph -->
-                <div class="section">
-                    <h2><i class="fas fa-chart-bar"></i> Torque vs Speed</h2>
-                    <canvas id="torque-speed-chart"></canvas>
-                </div>
             </div>
 
-            <!-- Tab Content: Motor List -->
-            <div id="motor-list-tab" class="tab-content">
-                <h2><i class="fas fa-database"></i> Preconfigured Motors</h2>
-                <div style="margin-bottom: 10px; display: flex; gap: 10px; align-items: center;">
-                    <button id="export-motor-list-btn" class="export-btn">
-                        <i class="fas fa-download"></i> Export Motor List
-                    </button>
-                    <button id="import-motor-list-btn" class="import-btn">
-                        <i class="fas fa-upload"></i> Import Motor List
-                    </button>
-                    <input type="file" id="import-file-input" accept=".json" style="display: none;">
+            <div class="right-section">
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">Selected Motors</span>
+                        <div style="display: flex; gap: 8px; margin-left: auto;">
+                            <button class="btn-primary" id="motor-list-btn" title="Motor List" style="font-size: 0.8rem; padding: 0 0.4rem;"><i class="fas fa-list"></i></button>
+                            <button class="btn-secondary" id="add-motor-btn" title="Add Motor" style="font-size: 0.8rem; padding: 0 0.4rem;"><i class="fas fa-plus"></i></button>
+                            <button class="btn-primary" type="button" id="share-simulation-btn" style="font-size: 0.8rem; padding: 0 0.4rem;"><i class="fas fa-share"></i></button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <table id="selected-motors-table" class="table">
+                            <thead>
+                                <tr>
+                                    <th>Model</th>
+                                    <th>Voltage</th>
+                                    <th>Max Current</th>
+                                    <th>Pulley</th>
+                            </tr>
+                        </thead>
+                        <tbody id="selected-motors-table-body"></tbody>
+                    </table>
+                    </div>
                 </div>
-                <div id="motor-list-content">
-                    <p>Loading motor list...</p>
-                </div>
-            </div>
 
-            <!-- Tab Content: Add Motor -->
-            <div id="add-motor-tab" class="tab-content">
-                <h2><i class="fas fa-plus-circle"></i> Add New Motor</h2>
-                <p>Add a motor to the list for the current session. This won't permanently save the motor.</p>
-                <form id="add-motor-form">
-                    <!-- Add motor form -->
-                    <div class="form-group">
-                        <label for="new-motor-brandmodel"><i class="fas fa-tag"></i> Brand & Model *</label>
-                        <input type="text" id="new-motor-brandmodel" placeholder="e.g., LDO-42STH48-2004AH" required>
+                <div class="card help-card">
+                    <div class="card-header"><span class="card-title">How to Use</span></div>
+                    <div class="card-body pa-help-text">
+                        <p>1. Set the simulation parameters on the left</p>
+                        <p>2. Search/add motors on the left table selector</p>
+                        <p>3. Review selected motors on the right list</p>
+                        <p>4. Click Share Simulation to copy a link</p>
                     </div>
-                    <div class="form-group">
-                        <label for="new-motor-stepangle"><i class="fas fa-angle-right"></i> Step Angle (°)*</label>
-                        <input type="number" id="new-motor-stepangle" placeholder="e.g., 1.8" step="any" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="new-motor-current"><i class="fas fa-bolt"></i> Rated Current (A)*</label>
-                        <input type="number" id="new-motor-current" placeholder="e.g., 2.0" step="any" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="new-motor-torque"><i class="fas fa-gauge"></i> Holding Torque (N-cm)*</label>
-                        <input type="number" id="new-motor-torque" placeholder="e.g., 59" step="any" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="new-motor-inductance"><i class="fas fa-industry"></i> Inductance (mH)*</label>
-                        <input type="number" id="new-motor-inductance" placeholder="e.g., 3.0" step="any" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="new-motor-resistance"><i class="fas fa-ohm"></i> Resistance (Ω)*</label>
-                        <input type="number" id="new-motor-resistance" placeholder="e.g., 1.4" step="any" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="new-motor-inertia"><i class="fas fa-balance-scale"></i> Rotor Inertia (g-cm²)</label>
-                        <input type="number" id="new-motor-inertia" placeholder="e.g., 68" step="any">
-                    </div>
-                    <div class="form-group">
-                        <label for="new-motor-nema"><i class="fas fa-cube"></i> NEMA</label>
-                        <input type="number" id="new-motor-nema" placeholder="e.g., 17" step="1">
-                    </div>
-                    <div class="form-group">
-                        <label for="new-motor-length"><i class="fas fa-ruler-vertical"></i> Body Length (mm)</label>
-                        <input type="number" id="new-motor-length" placeholder="e.g., 48" step="any">
-                    </div>
-                    <button type="submit"><i class="fas fa-save"></i> Add Motor to Session</button>
-                </form>
-                <div id="add-motor-status"></div>
+                </div>
             </div>
         </div>
 
-        <!-- Acknowledgements Section -->
+        <div class="graph-section">
+            <div class="card">
+                <div class="card-header"><span class="card-title">Torque vs Speed</span></div>
+                <div class="card-body simulation-graph-panel">
+                    <canvas id="torque-speed-chart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
         <div class="section acknowledgements">
             <h2><i class="fas fa-hands-helping"></i> Acknowledgements and Sources</h2>
             <p>This simulation tool was inspired by and uses data derived from the excellent work found in the following
@@ -180,7 +114,79 @@
             </ul>
             <p>Many thanks to the maintainers and contributors of these projects.</p>
         </div>
+    </footer>
     </div>
+
+    <!-- Modal for Motor List -->
+    <div id="motor-list-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-title">Preconfigured Motors</span>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="margin-bottom: 10px; display: flex; gap: 10px; align-items: center;">
+                    <button id="export-motor-list-btn" class="btn-primary">Export Motor List</button>
+                    <button id="import-motor-list-btn" class="btn-secondary">Import Motor List</button>
+                    <input type="file" id="import-file-input" accept=".json" style="display: none;" />
+                </div>
+                <div id="motor-list-content"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Add Motor -->
+    <div id="add-motor-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-title">Add New Motor</span>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="add-motor-form">
+                    <div class="form-group">
+                        <label for="new-motor-brandmodel"><i class="fas fa-tag"></i> Brand & Model *</label>
+                        <input type="text" id="new-motor-brandmodel" placeholder="eg. LDO-42STH48-2004AH" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="new-motor-stepangle"><i class="fas fa-angle-right"></i> Step Angle (°)*</label>
+                        <input type="number" id="new-motor-stepangle" placeholder="1.8" step="any" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="new-motor-current"><i class="fas fa-bolt"></i> Rated Current (A)*</label>
+                        <input type="number" id="new-motor-current" placeholder="2.0" step="any" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="new-motor-torque"><i class="fas fa-gauge"></i> Holding Torque (N-cm)*</label>
+                        <input type="number" id="new-motor-torque" placeholder="59" step="any" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="new-motor-inductance"><i class="fas fa-industry"></i> Inductance (mH)*</label>
+                        <input type="number" id="new-motor-inductance" placeholder="3.0" step="any" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="new-motor-resistance"><i class="fas fa-ohm"></i> Resistance (Ω)*</label>
+                        <input type="number" id="new-motor-resistance" placeholder="1.4" step="any" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="new-motor-inertia"><i class="fas fa-balance-scale"></i> Rotor Inertia (g-cm²)</label>
+                        <input type="number" id="new-motor-inertia" placeholder="68" step="any">
+                    </div>
+                    <div class="form-group">
+                        <label for="new-motor-nema"><i class="fas fa-cube"></i> NEMA</label>
+                        <input type="number" id="new-motor-nema" placeholder="17" step="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="new-motor-length"><i class="fas fa-ruler-vertical"></i> Body Length (mm)</label>
+                        <input type="number" id="new-motor-length" placeholder="48" step="any">
+                    </div>
+                    <button class="btn-primary" type="submit">Add Motor to Session</button>
+                </form>
+                <div id="add-motor-status"></div>
+            </div>
+        </div>
+    </div>
+
     <!-- Script -->
     <script type="module" src="js/app.js"></script>
 

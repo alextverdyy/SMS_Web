@@ -934,5 +934,83 @@
       "inductanceMH": 2.9,
       "resistanceOhms": 2.2,
       "rotorInertiaGCm2": 30
+  },
+  {
+      "brandModel": "Kraken-MotorV2",
+      "brand": "Kraken",
+      "model": "MotorV2",
+      "nema": 17,
+      "bodyLengthMm": 60,
+      "stepAngleDeg": 1.8,
+      "ratedCurrentA": 3.0,
+      "torqueNCm": 80,
+      "inductanceMH": 1.6,
+      "resistanceOhms": 1.0,
+      "rotorInertiaGCm2": 100
+  },
+  {
+      "brandModel": "Excit3D-MaxMotor",
+      "brand": "Excit3D",
+      "model": "MaxMotor",
+      "nema": 17,
+      "bodyLengthMm": 48,
+      "stepAngleDeg": 1.8,
+      "ratedCurrentA": 4.0,
+      "torqueNCm": 56,
+      "inductanceMH": 0.6,
+      "resistanceOhms": 0.45,
+      "rotorInertiaGCm2": 85
+  },
+  {
+      "brandModel": "KeliMotor-BJ42D41-14V19",
+      "brand": "KeliMotor",
+      "model": "BJ42D41-14V19",
+      "nema": 17,
+      "bodyLengthMm": 60,
+      "stepAngleDeg": 1.8,
+      "ratedCurrentA": 2.0,
+      "torqueNCm": 65,
+      "inductanceMH": 2.8,
+      "resistanceOhms": 1.1,
+      "rotorInertiaGCm2": 128
+  },
+  {
+      "brandModel": "KeliMotor-BJ42D22-25V04",
+      "brand": "KeliMotor",
+      "model": "BJ42D22-25V04",
+      "nema": 17,
+      "bodyLengthMm": 40,
+      "stepAngleDeg": 1.8,
+      "ratedCurrentA": 1.2,
+      "torqueNCm": 40,
+      "inductanceMH": 6.0,
+      "resistanceOhms": 2.9,
+      "rotorInertiaGCm2": 57
+  },
+  {
+      "brandModel": "ACT-17HS5425-06",
+      "brand": "ACT",
+      "model": "17HS5425-06",
+      "nema": 17,
+      "bodyLengthMm": 48,
+      "stepAngleDeg": 1.8,
+      "ratedCurrentA": 2.5,
+      "torqueNCm": 60,
+      "inductanceMH": 1.75,
+      "resistanceOhms": 1.0,
+      "rotorInertiaGCm2": 68
+  },
+  {
+      "brandModel": "ACT-17HS6416D6L22P5.5-12",
+      "brand": "ACT",
+      "model": "17HS6416D6L22P5.5-12",
+      "nema": 17,
+      "bodyLengthMm": 60,
+      "stepAngleDeg": 1.8,
+      "ratedCurrentA": 1.6,
+      "torqueNCm": 70,
+      "inductanceMH": 6.0,
+      "resistanceOhms": 2.2,
+      "rotorInertiaGCm2": 102
   }
 ]
