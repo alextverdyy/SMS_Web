@@ -1,4 +1,4 @@
-# Stepper Motor Simulation Tool for 3D Printers
+# SMS — Stepper Motor Simulator
 
 This is a web-based simulation tool for analyzing stepper motor behavior in 3D printing applications. It allows you to simulate and compare motor performance in real time, making it easier to choose the right motor for your setup.
 
