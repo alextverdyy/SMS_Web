@@ -409,7 +409,7 @@ export class UIManager {
             inductanceMH:    parseFloat(document.getElementById('new-motor-inductance').value),
             resistanceOhms:  parseFloat(document.getElementById('new-motor-resistance').value),
             rotorInertiaGCm2: parseFloat(document.getElementById('new-motor-inertia').value) || null,
-            nema:            parseInt(document.getElementById('new-motor-nema').value) || null,
+            nema:            parseInt(document.getElementById('new-motor-nema')?.value) || null,
             bodyLengthMm:    parseFloat(document.getElementById('new-motor-length').value) || null,
             useRms:          document.getElementById('new-motor-rms').checked
         };
