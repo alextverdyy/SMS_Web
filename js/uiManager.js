@@ -46,9 +46,9 @@ export class UIManager {
         this.importMotorsBtn     = document.getElementById('import-motors-btn');
         this.importFileInput     = document.getElementById('import-file-input');
 
-        // Chart tabs
-        this.chartTabs           = document.querySelectorAll('.chart-tab');
-        this.chartInstances      = document.querySelectorAll('.chart-instance');
+        // Chart tabs — scoped to main panel only (exclude advanced panel)
+        this.chartTabs           = document.querySelectorAll('.chart-panel:not(.adv-panel) .chart-tab');
+        this.chartInstances      = document.querySelectorAll('.chart-panel:not(.adv-panel) .chart-instance');
 
         // Share modal
         this.shareUrlInput      = document.getElementById('share-url-input');
@@ -57,6 +57,14 @@ export class UIManager {
 
         // Theme selector
         this.themeSwatches      = document.getElementById('theme-swatches');
+
+        // Driver mode + advanced panel
+        this.driverModeSelector = document.getElementById('driver-mode-selector');
+        this.holdRatioRow       = document.getElementById('hold-ratio-row');
+        this.advancedToggleBtn  = document.getElementById('advanced-toggle-btn');
+        this.advancedPanel      = document.getElementById('advanced-panel');
+        this.driverMode         = 'spreadcycle';
+        this.advancedMode       = false;
     }
 
     _setupEventListeners() {
@@ -74,10 +82,54 @@ export class UIManager {
         this.driveSetupSelector.addEventListener('click', e => {
             const btn = e.target.closest('.drive-opt');
             if (!btn) return;
-            document.querySelectorAll('.drive-opt').forEach(b => b.classList.remove('active'));
+            this.driveSetupSelector.querySelectorAll('.drive-opt').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             this.driveSetup = btn.dataset.setup;
             this.appCallbacks.updateSimulation();
+        });
+
+        // Driver mode selector
+        this.driverModeSelector?.addEventListener('click', e => {
+            const btn = e.target.closest('.drive-opt');
+            if (!btn) return;
+            this.driverModeSelector.querySelectorAll('.drive-opt').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            this.driverMode = btn.dataset.mode;
+            if (this.holdRatioRow) this.holdRatioRow.style.display = this.driverMode === 'stealthchop' ? '' : 'none';
+            this.appCallbacks.updateSimulation();
+        });
+
+        // Advanced mode toggle
+        this.advancedToggleBtn?.addEventListener('click', () => {
+            this.advancedMode = !this.advancedMode;
+            if (this.advancedPanel) this.advancedPanel.style.display = this.advancedMode ? '' : 'none';
+            this.advancedToggleBtn.classList.toggle('active', this.advancedMode);
+            if (this.advancedMode && this.simulation) {
+                // Init charts if they weren't initialized yet (DOM was hidden at startup)
+                if (!this.simulation.currentChart || !this.simulation.bemfChart) {
+                    this.simulation.initializeCharts();
+                    this.appCallbacks.updateSimulation();
+                }
+                setTimeout(() => {
+                    this.simulation.currentChart?.resize();
+                    this.simulation.bemfChart?.resize();
+                }, 50);
+            }
+        });
+
+        // Advanced chart tabs
+        document.querySelectorAll('[data-adv-chart]').forEach(tab => {
+            tab.addEventListener('click', () => {
+                const which = tab.dataset.advChart;
+                document.querySelectorAll('[data-adv-chart]').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                document.querySelectorAll('#advanced-panel .chart-instance').forEach(c => c.classList.remove('active'));
+                document.getElementById(`${which}-chart`)?.classList.add('active');
+                setTimeout(() => {
+                    this.simulation.currentChart?.resize();
+                    this.simulation.bemfChart?.resize();
+                }, 10);
+            });
         });
 
         // Chart tabs
@@ -264,32 +316,44 @@ export class UIManager {
                      <div class="sim-motor-name" title="${motor.brandModel}">${motor.brandModel}</div>
                      ${isUnderpowered ? '<i class="fas fa-triangle-exclamation warn-icon" title="Potentially underpowered"></i>' : ''}
                      ${showBadge ? `<div class="sim-motor-badge">#${idxMap[motor.brandModel]}</div>` : ''}
+                     <button class="sim-motor-expand" title="Per-motor overrides"><i class="fas fa-sliders"></i></button>
                      <button class="sim-motor-remove" title="Remove motor"><i class="fas fa-times"></i></button>
                  </div>
-                 <div class="sim-motor-params">
-                     <div class="sim-param-field">
-                         <label class="sim-param-label">V</label>
-                         <input class="sim-param-input" type="number" step="any" value="${motor.inputVoltageV ?? params.inputVoltage}" data-field="inputVoltageV">
+                 <div class="sim-motor-overrides">
+                     <div class="sim-motor-params">
+                         <div class="sim-param-field">
+                             <label class="sim-param-label">Voltage <span class="sim-param-unit">V</span></label>
+                             <input class="sim-param-input" type="number" step="any" value="${motor.inputVoltageV ?? params.inputVoltage}" data-field="inputVoltageV">
+                         </div>
+                         <div class="sim-param-field">
+                             <label class="sim-param-label">Current <span class="sim-param-unit" data-current-label>${motor.useRms ? 'Arms' : 'A'}</span></label>
+                             <input class="sim-param-input" type="number" step="any" value="${+displayCurrent.toFixed(4)}" ${motor.useRms ? 'disabled' : ''} data-field="maxDriveCurrentA" title="${motor.useRms ? 'RMS current (peak × 0.707)' : 'Peak drive current'}">
+                         </div>
+                         <div class="sim-param-field">
+                             <label class="sim-param-label">Pulley <span class="sim-param-unit">T</span></label>
+                             <input class="sim-param-input" type="number" step="any" value="${motor.pulleySizeMM ?? params.pulleySize}" data-field="pulleySizeMM">
+                         </div>
                      </div>
-                     <div class="sim-param-field">
-                         <label class="sim-param-label" data-current-label>${motor.useRms ? 'Arms' : 'A'}</label>
-                         <input class="sim-param-input" type="number" step="any" value="${+displayCurrent.toFixed(4)}" ${motor.useRms ? 'disabled' : ''} data-field="maxDriveCurrentA" title="${motor.useRms ? 'RMS current (peak × 0.707) — edit the peak value via the motor settings' : 'Peak drive current'}">
-                     </div>
-                     <div class="sim-param-field">
-                         <label class="sim-param-label">T</label>
-                         <input class="sim-param-input" type="number" step="any" value="${motor.pulleySizeMM ?? params.pulleySize}" data-field="pulleySizeMM">
-                     </div>
-                 </div>
-                 <div class="sim-motor-options">
-                     <div class="rms-header">
-                         <span class="rms-title">RMS Safe</span>
-                         <label class="switch">
-                             <input type="checkbox" class="motor-rms-toggle" ${motor.useRms ? 'checked' : ''}>
-                             <span class="slider"></span>
-                         </label>
+                     <div class="sim-motor-options">
+                         <div class="rms-header">
+                             <div>
+                                 <span class="rms-title">RMS current</span>
+                                 <div class="rms-desc">Scale to ×0.707 — thermal safe range</div>
+                             </div>
+                             <label class="switch">
+                                 <input type="checkbox" class="motor-rms-toggle" ${motor.useRms ? 'checked' : ''}>
+                                 <span class="slider"></span>
+                             </label>
+                         </div>
                      </div>
                  </div>
              `;
+
+            // Expand overrides toggle
+            card.querySelector('.sim-motor-expand').onclick = (e) => {
+                e.stopPropagation();
+                card.classList.toggle('expanded');
+            };
 
             // Remove button
             card.querySelector('.sim-motor-remove').onclick = (e) => {
@@ -436,7 +500,9 @@ export class UIManager {
             pulleySize:   parseFloat(document.getElementById('pulley-size').value)   || 20,
             acceleration: parseFloat(document.getElementById('acceleration').value)  || 20000,
             toolheadMass: parseFloat(document.getElementById('toolhead-mass').value) || 500,
-            globalRms:    document.getElementById('global-rms').checked
+            globalRms:    document.getElementById('global-rms').checked,
+            driverMode:   this.driverMode,
+            holdRatio:    parseFloat(document.getElementById('hold-ratio')?.value) || 0.5
         };
     }
 
@@ -448,7 +514,7 @@ export class UIManager {
         if (params.globalRms    !== undefined) document.getElementById('global-rms').checked = params.globalRms;
         if (params.driveSetup) {
             this.driveSetup = params.driveSetup;
-            document.querySelectorAll('.drive-opt').forEach(btn => {
+            this.driveSetupSelector?.querySelectorAll('.drive-opt').forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.setup === params.driveSetup);
             });
         }

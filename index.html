@@ -23,14 +23,6 @@
     </div>
 
     <div class="header-nav">
-      <div class="drive-setup-wrap">
-        <div class="drive-options" id="drive-setup-selector">
-          <button class="drive-opt active" data-setup="1motor" title="Single Motor">1M</button>
-          <button class="drive-opt" data-setup="2wd" title="2WD / CoreXY">2WD</button>
-          <button class="drive-opt" data-setup="awd" title="AWD / 4 Motors">AWD</button>
-        </div>
-      </div>
-
       <div class="theme-select-wrap">
         <div class="theme-swatches" id="theme-swatches">
           <button class="theme-swatch industrial active" data-theme="industrial" title="Industrial Orange"></button>
@@ -82,11 +74,31 @@
             <input class="param-input" type="number" id="toolhead-mass" value="500" step="any" min="0">
           </div>
           <div class="param-row">
-            <label class="param-label" for="global-rms">RMS current <span class="param-unit">×0.707</span></label>
+            <label class="param-label" for="global-rms">RMS <span class="param-unit">×0.707</span></label>
             <label class="switch">
                 <input type="checkbox" id="global-rms">
                 <span class="slider"></span>
             </label>
+          </div>
+          <div class="param-row">
+            <label class="param-label">Drive <span class="param-unit">setup</span></label>
+            <div class="drive-options" id="drive-setup-selector">
+              <button type="button" class="drive-opt active" data-setup="1motor" title="Single Motor">1M</button>
+              <button type="button" class="drive-opt" data-setup="2wd" title="2WD / CoreXY">2WD</button>
+              <button type="button" class="drive-opt" data-setup="awd" title="AWD / 4 Motors">AWD</button>
+            </div>
+          </div>
+          <div class="param-row">
+            <label class="param-label">Driver <span class="param-unit">model</span></label>
+            <div class="drive-options" id="driver-mode-selector">
+              <button type="button" class="drive-opt active" data-mode="spreadcycle" title="SpreadCycle — phasor voltage constraint (TMC2xxx, accurate)">SC</button>
+              <button type="button" class="drive-opt" data-mode="stealthchop" title="StealthChop — silent mode with hold current (TMC2xxx)">STH</button>
+              <button type="button" class="drive-opt" data-mode="classic" title="Classic — simplified scalar model (DRV8825-style)">CL</button>
+            </div>
+          </div>
+          <div class="param-row" id="hold-ratio-row" style="display:none">
+            <label class="param-label">Hold <span class="param-unit">ratio</span></label>
+            <input class="param-input" type="number" id="hold-ratio" value="0.5" step="0.05" min="0" max="1" title="IHOLD / IRUN ratio — TMC standstill current (default 0.5)">
           </div>
         </form>
       </div>
@@ -141,6 +153,9 @@
           <button class="copy-chart-btn" id="copy-chart-panel-btn" title="Copy visible chart to clipboard">
             <i class="fas fa-copy"></i> Copy
           </button>
+          <button class="copy-chart-btn adv-toggle-btn" id="advanced-toggle-btn" title="Toggle advanced debug charts (phase current, back-EMF)">
+            <i class="fas fa-flask"></i> Advanced
+          </button>
         </div>
 
         <div class="chart-area">
@@ -148,6 +163,25 @@
           <div id="power-chart"  class="chart-instance"></div>
         </div>
       </div>
+
+      <!-- Advanced debug panel (phase current, back-EMF) -->
+      <div class="chart-panel adv-panel" id="advanced-panel" style="display:none">
+        <div class="chart-hdr">
+          <div class="chart-tabs">
+            <button class="chart-tab active" data-adv-chart="current">
+              <i class="fas fa-wave-square"></i> Phase Current
+            </button>
+            <button class="chart-tab" data-adv-chart="bemf">
+              <i class="fas fa-bolt"></i> Back-EMF
+            </button>
+          </div>
+        </div>
+        <div class="chart-area">
+          <div id="current-chart" class="chart-instance active"></div>
+          <div id="bemf-chart"    class="chart-instance"></div>
+        </div>
+      </div>
+
     </main>
 
   </div><!-- /.app-layout -->

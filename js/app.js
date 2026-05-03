@@ -41,7 +41,7 @@ class App {
         const result = this.motorManager.addCustomMotor(motorData);
         this.uiManager.displayAddMotorStatus(result.success, result.message);
         if (result.success) {
-            showToast(`Motor "${result.motor.brandModel}" added to session.`, 'success');
+            this._addMotorToSimulation(result.motor);
         }
     }
 
