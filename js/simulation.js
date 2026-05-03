@@ -120,7 +120,7 @@ export class Simulation {
                 driverMode = 'spreadcycle', holdRatio = 0.5 } = params;
         const driveDiv = driveSetup === 'awd' ? 4 : driveSetup === '2wd' ? 2 : 1;
 
-        const MAX_RPS = 50, RPS_STEP = 0.5;
+        const MAX_RPS = 100, RPS_STEP = 0.5;
         const rpsValues = Array.from({ length: Math.ceil(MAX_RPS / RPS_STEP) + 1 }, (_, i) => i * RPS_STEP);
 
         const torqueSeries = [], powerSeries = [], currentSeries = [], bemfSeries = [];
