@@ -62,7 +62,9 @@ export class UIManager {
         this.driverModeSelector = document.getElementById('driver-mode-selector');
         this.holdRatioRow       = document.getElementById('hold-ratio-row');
         this.advancedToggleBtn  = document.getElementById('advanced-toggle-btn');
+        this.mainChartPanel     = document.getElementById('main-chart-panel');
         this.advancedPanel      = document.getElementById('advanced-panel');
+        this.advStatsStrip      = document.getElementById('adv-stats-strip');
         this.driverMode         = 'spreadcycle';
         this.advancedMode       = false;
     }
@@ -99,23 +101,9 @@ export class UIManager {
             this.appCallbacks.updateSimulation();
         });
 
-        // Advanced mode toggle
-        this.advancedToggleBtn?.addEventListener('click', () => {
-            this.advancedMode = !this.advancedMode;
-            if (this.advancedPanel) this.advancedPanel.style.display = this.advancedMode ? '' : 'none';
-            this.advancedToggleBtn.classList.toggle('active', this.advancedMode);
-            if (this.advancedMode && this.simulation) {
-                // Init charts if they weren't initialized yet (DOM was hidden at startup)
-                if (!this.simulation.currentChart || !this.simulation.bemfChart) {
-                    this.simulation.initializeCharts();
-                    this.appCallbacks.updateSimulation();
-                }
-                setTimeout(() => {
-                    this.simulation.currentChart?.resize();
-                    this.simulation.bemfChart?.resize();
-                }, 50);
-            }
-        });
+        // Advanced mode toggle — swap: hide main chart, advanced fills the space
+        this.advancedToggleBtn?.addEventListener('click', () => this._toggleAdvancedMode());
+        document.getElementById('advanced-close-btn')?.addEventListener('click', () => this._toggleAdvancedMode());
 
         // Advanced chart tabs
         document.querySelectorAll('[data-adv-chart]').forEach(tab => {
@@ -128,6 +116,9 @@ export class UIManager {
                 setTimeout(() => {
                     this.simulation.currentChart?.resize();
                     this.simulation.bemfChart?.resize();
+                    this.simulation.impedanceChart?.resize();
+                    this.simulation.efficiencyChart?.resize();
+                    this.simulation.copperLossChart?.resize();
                 }, 10);
             });
         });
@@ -224,7 +215,48 @@ export class UIManager {
         });
 
         const savedTheme = localStorage.getItem('stepsim-theme');
-        if (savedTheme) this._applyTheme(savedTheme);
+        if (savedTheme) {
+            this._applyTheme(savedTheme);
+        } else {
+            this._applyTheme('tokyonight');
+        }
+
+        // Window resize
+        window.addEventListener('resize', debounce(() => {
+            this.simulation?.torqueChart?.resize();
+            this.simulation?.powerChart?.resize();
+            this.simulation?.currentChart?.resize();
+            this.simulation?.bemfChart?.resize();
+            this.simulation?.impedanceChart?.resize();
+            this.simulation?.efficiencyChart?.resize();
+            this.simulation?.copperLossChart?.resize();
+        }, 150));
+    }
+
+    _toggleAdvancedMode() {
+        this.advancedMode = !this.advancedMode;
+
+        if (this.advancedMode) {
+            this.mainChartPanel.style.display = 'none';
+            this.advancedPanel.style.display = 'flex';
+            this.advancedToggleBtn.classList.add('active');
+            this._updateAdvancedStats();
+        } else {
+            this.mainChartPanel.style.display = 'flex';
+            this.advancedPanel.style.display = 'none';
+            this.advancedToggleBtn.classList.remove('active');
+        }
+
+        // Resize all charts
+        setTimeout(() => {
+            this.simulation.torqueChart?.resize();
+            this.simulation.powerChart?.resize();
+            this.simulation.currentChart?.resize();
+            this.simulation.bemfChart?.resize();
+            this.simulation.impedanceChart?.resize();
+            this.simulation.efficiencyChart?.resize();
+            this.simulation.copperLossChart?.resize();
+        }, 50);
     }
 
     _applyTheme(theme) {
@@ -302,9 +334,10 @@ export class UIManager {
             const mCurr = motor.maxDriveCurrentA ?? motor.ratedCurrentA;
             const mPull = motor.pulleySizeMM ?? params.pulleySize;
             
-            const displayCurrent = motor.useRms ? (mCurr * 0.707) : mCurr;
+            const calcCurrent = motor.useRms ? (mCurr * 0.707) : mCurr;
+            const displayCurrent = calcCurrent;
             
-            const torqueAt200 = this.simulation?.getTorqueAtSpeed(motor, mVolt, mCurr, 200, mPull, params.acceleration) || 0;
+            const torqueAt200 = this.simulation?.getTorqueAtSpeed(motor, mVolt, calcCurrent, 200, mPull, params.acceleration) || 0;
             const reqTorque   = this.simulation?.getRequiredTorque(params, this.driveSetup) || 0;
             const isUnderpowered = torqueAt200 < reqTorque;
 
@@ -393,6 +426,64 @@ export class UIManager {
 
 
             this.simulationMotorsList.appendChild(card);
+        });
+
+        this._updateAdvancedStats();
+    }
+
+    // ── Advanced stats strip ──────────────────────────────────────
+
+    _updateAdvancedStats() {
+        if (!this.advStatsStrip || !this.advancedMode) return;
+        const motors = this.motorManager.getMotorsForSimulation();
+        const params = this.getSimulationParameters();
+        this.advStatsStrip.innerHTML = '';
+
+        if (motors.length === 0) {
+            this.advStatsStrip.innerHTML = '<div class="adv-stats-empty">Add a motor to see electrical analysis</div>';
+            return;
+        }
+
+        motors.forEach((motor, index) => {
+            const color    = this.simulation?.getMotorColor(index, motors.length) || '#3b82f6';
+            const voltage  = motor.inputVoltageV ?? params.inputVoltage;
+            const pulley   = motor.pulleySizeMM  ?? params.pulleySize;
+            const analysis = this.simulation?.getMotorAnalysis(motor, voltage, pulley);
+            if (!analysis) return;
+
+            const speedLimitStr = analysis.speedLimit_mms > 99999
+                ? '∞'
+                : analysis.speedLimit_mms.toFixed(0);
+
+            const group = document.createElement('div');
+            group.className = 'adv-stat-group';
+            group.innerHTML = `
+                <div class="adv-stat-motor-dot" style="background:${color}"></div>
+                <div class="adv-stat-motor-name" title="${motor.brandModel}">${motor.brandModel}</div>
+                <div class="adv-stat-items">
+                    <div class="adv-stat">
+                        <div class="adv-stat-key">Ke</div>
+                        <div class="adv-stat-val">${analysis.Ke_mVperMms.toFixed(2)}<span class="unit">mV·s/mm</span></div>
+                    </div>
+                    <div class="adv-stat">
+                        <div class="adv-stat-key">Kt</div>
+                        <div class="adv-stat-val">${analysis.Kt_NcmA.toFixed(2)}<span class="unit">N·cm/A</span></div>
+                    </div>
+                    <div class="adv-stat">
+                        <div class="adv-stat-key">τ L/R</div>
+                        <div class="adv-stat-val">${analysis.tau_ms.toFixed(2)}<span class="unit">ms</span></div>
+                    </div>
+                    <div class="adv-stat">
+                        <div class="adv-stat-key">I²R rated</div>
+                        <div class="adv-stat-val">${analysis.Prated_W.toFixed(2)}<span class="unit">W</span></div>
+                    </div>
+                    <div class="adv-stat">
+                        <div class="adv-stat-key">EMF limit</div>
+                        <div class="adv-stat-val">${speedLimitStr}<span class="unit">mm/s</span></div>
+                    </div>
+                </div>
+            `;
+            this.advStatsStrip.appendChild(group);
         });
     }
 

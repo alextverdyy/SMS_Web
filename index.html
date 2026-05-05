@@ -25,11 +25,11 @@
     <div class="header-nav">
       <div class="theme-select-wrap">
         <div class="theme-swatches" id="theme-swatches">
-          <button class="theme-swatch industrial active" data-theme="industrial" title="Industrial Orange"></button>
-          <button class="theme-swatch modern" data-theme="modern" title="Modern Teal"></button>
-          <button class="theme-swatch terminal" data-theme="terminal" title="Terminal Green"></button>
-          <button class="theme-swatch minimal" data-theme="minimal" title="Minimal Blue"></button>
-          <button class="theme-swatch purple" data-theme="purple" title="Purple"></button>
+          <button class="theme-swatch tokyonight active" data-theme="tokyonight" title="Tokyo Night"></button>
+          <button class="theme-swatch cosec-twilight" data-theme="cosec-twilight" title="Cosec Twilight"></button>
+          <button class="theme-swatch catppuccin" data-theme="catppuccin" title="Catppuccin Mocha"></button>
+          <button class="theme-swatch gorgoroth" data-theme="gorgoroth" title="Gorgoroth"></button>
+          <button class="theme-swatch industrial" data-theme="industrial" title="Industrial Orange"></button>
         </div>
       </div>
     </div>
@@ -140,7 +140,7 @@
 
     <!-- Main Chart Area -->
     <main class="main-content">
-      <div class="chart-panel">
+      <div class="chart-panel" id="main-chart-panel">
         <div class="chart-hdr">
           <div class="chart-tabs">
             <button class="chart-tab active" data-chart="torque">
@@ -164,8 +164,9 @@
         </div>
       </div>
 
-      <!-- Advanced debug panel (phase current, back-EMF) -->
+      <!-- Advanced debug panel -->
       <div class="chart-panel adv-panel" id="advanced-panel" style="display:none">
+        <div class="adv-stats-strip" id="adv-stats-strip"></div>
         <div class="chart-hdr">
           <div class="chart-tabs">
             <button class="chart-tab active" data-adv-chart="current">
@@ -174,11 +175,26 @@
             <button class="chart-tab" data-adv-chart="bemf">
               <i class="fas fa-bolt"></i> Back-EMF
             </button>
+            <button class="chart-tab" data-adv-chart="impedance">
+              <i class="fas fa-signal"></i> Impedance
+            </button>
+            <button class="chart-tab" data-adv-chart="efficiency">
+              <i class="fas fa-leaf"></i> Efficiency
+            </button>
+            <button class="chart-tab" data-adv-chart="copperloss">
+              <i class="fas fa-fire-flame-curved"></i> Copper Loss
+            </button>
           </div>
+          <button class="copy-chart-btn adv-toggle-btn" id="advanced-close-btn" title="Exit advanced view">
+            <i class="fas fa-xmark"></i> Close
+          </button>
         </div>
         <div class="chart-area">
-          <div id="current-chart" class="chart-instance active"></div>
-          <div id="bemf-chart"    class="chart-instance"></div>
+          <div id="current-chart"    class="chart-instance active"></div>
+          <div id="bemf-chart"       class="chart-instance"></div>
+          <div id="impedance-chart"  class="chart-instance"></div>
+          <div id="efficiency-chart" class="chart-instance"></div>
+          <div id="copperloss-chart" class="chart-instance"></div>
         </div>
       </div>
 
@@ -190,32 +206,42 @@
   <footer class="app-footer">
     <div class="footer-inner">
       <div class="footer-left">
-        <span class="footer-copy"><span class="copyright-symbol">©</span> SMS · MIT License</span>        <div class="footer-links">
+        <div class="footer-branding">
+          <span class="footer-logo">SMS</span>
+          <span class="footer-copy">© 2026 · MIT License</span>
+        </div>
+        <div class="footer-group">
+          <div class="group-label">Developer</div>
           <a href="https://github.com/alextverdyy" target="_blank" rel="noopener noreferrer">
-            <i class="fas fa-code"></i> Developed by alextverdyy
+            <i class="fab fa-github"></i> alextverdyy
           </a>
-          <a href="https://github.com/MSzturc/the100/tree/main/Docs" target="_blank" rel="noopener noreferrer">
-            <i class="fab fa-github"></i> MSzturc/the100
-          </a>
-          <a href="https://github.com/eddietheengineer/documentation/tree/master/stepper_motor/data" target="_blank" rel="noopener noreferrer">
-            <i class="fab fa-github"></i> eddietheengineer
-          </a>
+        </div>
+        <div class="footer-group">
+          <div class="group-label">Physics & Data Sources</div>
+          <div class="footer-links">
+            <a href="https://github.com/TheDevMinerTV/stepper-simulator" target="_blank" rel="noopener noreferrer" title="Core physics engine source">
+              <i class="fas fa-microchip"></i> TheDevMinerTV/stepper-simulator
+            </a>
+            <a href="https://github.com/MSzturc/the100/tree/main/Docs" target="_blank" rel="noopener noreferrer">
+              <i class="fas fa-database"></i> MSzturc/the100
+            </a>
+            <a href="https://github.com/eddietheengineer/documentation/tree/master/stepper_motor/data" target="_blank" rel="noopener noreferrer">
+              <i class="fas fa-database"></i> eddietheengineer
+            </a>
+          </div>
         </div>
       </div>
+      
       <div class="footer-right">
-        <div class="disclaimer-item">
-          <i class="fas fa-circle-info"></i>
-          <span>Motor specifications are sourced from official datasheets. Always verify whether the rated current is <strong>Peak</strong> or <strong>RMS</strong> before configuring your driver, this varies by manufacturer.</span>
-        </div>
-        <div class="disclaimer-item">
-          <i class="fas fa-link"></i>
-          <a href="https://discord.com/channels/790612368056647682/792502579211927572/1387683827635191839" target="_blank" rel="noopener noreferrer" class="discord-data-link">
-            LDO example of data sheet data
-          </a>
-        </div>
-        <div class="disclaimer-item">
-          <i class="fas fa-triangle-exclamation"></i>
-          <span>All simulation results are theoretical. The author is not responsible for any damage resulting from misuse.</span>
+        <div class="disclaimer-grid">
+          <div class="disclaimer-item">
+            <i class="fas fa-circle-info"></i>
+            <span>Verify <strong>Peak</strong> vs <strong>RMS</strong> current ratings in datasheets before configuration.</span>
+          </div>
+          <div class="disclaimer-item">
+            <i class="fas fa-triangle-exclamation"></i>
+            <span>Theoretical results only. Use at your own risk.</span>
+          </div>
         </div>
       </div>
     </div>

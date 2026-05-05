@@ -6,10 +6,13 @@ export class Simulation {
     constructor(torqueElementId = 'torque-chart', powerElementId = 'power-chart') {
         this.torqueElementId  = torqueElementId;
         this.powerElementId   = powerElementId;
-        this.torqueChart  = null;
-        this.powerChart   = null;
-        this.currentChart = null;
-        this.bemfChart    = null;
+        this.torqueChart     = null;
+        this.powerChart      = null;
+        this.currentChart    = null;
+        this.bemfChart       = null;
+        this.impedanceChart  = null;
+        this.efficiencyChart = null;
+        this.copperLossChart = null;
         this.activeChart  = 'torque';
         this._initialized = false;
         this.initializeCharts();
@@ -23,10 +26,16 @@ export class Simulation {
         this.torqueChart = echarts.init(torqueEl, 'dark', { renderer: 'canvas' });
         this.powerChart  = echarts.init(powerEl,  'dark', { renderer: 'canvas' });
 
-        const currentEl = document.getElementById('current-chart');
-        const bemfEl    = document.getElementById('bemf-chart');
-        if (currentEl) this.currentChart = echarts.init(currentEl, 'dark', { renderer: 'canvas' });
-        if (bemfEl)    this.bemfChart    = echarts.init(bemfEl,    'dark', { renderer: 'canvas' });
+        const currentEl     = document.getElementById('current-chart');
+        const bemfEl        = document.getElementById('bemf-chart');
+        const impedanceEl   = document.getElementById('impedance-chart');
+        const efficiencyEl  = document.getElementById('efficiency-chart');
+        const copperLossEl  = document.getElementById('copperloss-chart');
+        if (currentEl)    this.currentChart    = echarts.init(currentEl,    'dark', { renderer: 'canvas' });
+        if (bemfEl)       this.bemfChart       = echarts.init(bemfEl,       'dark', { renderer: 'canvas' });
+        if (impedanceEl)  this.impedanceChart  = echarts.init(impedanceEl,  'dark', { renderer: 'canvas' });
+        if (efficiencyEl) this.efficiencyChart = echarts.init(efficiencyEl, 'dark', { renderer: 'canvas' });
+        if (copperLossEl) this.copperLossChart = echarts.init(copperLossEl, 'dark', { renderer: 'canvas' });
 
         this._applyBaseOptions();
         this._initialized = true;
@@ -35,9 +44,31 @@ export class Simulation {
     _baseOpt(yName, labelColor, gridColor) {
         return {
             backgroundColor: 'transparent',
-            grid: { top: 30, right: 30, bottom: 30, left: 50, containLabel: true },
-            xAxis: { type: 'value', name: 'Speed (mm/s)', axisLine: { lineStyle: { color: labelColor } }, splitLine: { lineStyle: { color: gridColor } } },
-            yAxis: { type: 'value', name: yName,          axisLine: { lineStyle: { color: labelColor } }, splitLine: { lineStyle: { color: gridColor } } },
+            grid: { 
+                top: 40, 
+                right: 50, 
+                bottom: 45, 
+                left: 60, 
+                containLabel: true 
+            },
+            xAxis: { 
+                type: 'value', 
+                name: 'Speed (mm/s)', 
+                nameLocation: 'middle',
+                nameGap: 30,
+                axisLine: { lineStyle: { color: labelColor } }, 
+                splitLine: { lineStyle: { color: gridColor } },
+                axisLabel: { color: labelColor }
+            },
+            yAxis: { 
+                type: 'value', 
+                name: yName,          
+                nameLocation: 'middle',
+                nameGap: 45,
+                axisLine: { lineStyle: { color: labelColor } }, 
+                splitLine: { lineStyle: { color: gridColor } },
+                axisLabel: { color: labelColor }
+            },
             tooltip: {
                 trigger: 'axis',
                 backgroundColor: 'rgba(15,23,42,0.9)', borderColor: '#374151',
@@ -60,16 +91,19 @@ export class Simulation {
 
     _applyBaseOptions() {
         const style = getComputedStyle(document.documentElement);
-        const gridColor  = style.getPropertyValue('--grid-line').trim()      || '#2A2F36';
-        const labelColor = style.getPropertyValue('--text-secondary').trim() || '#9AA4AE';
+        const gridColor  = style.getPropertyValue('--line').trim()           || '#323232';
+        const labelColor = style.getPropertyValue('--ink-2').trim()          || '#888888';
+        const tooltipBg  = style.getPropertyValue('--bg-1').trim()           || '#252525';
+        const borderColor = style.getPropertyValue('--line-strong').trim()   || '#444444';
+        const textColor   = style.getPropertyValue('--ink-0').trim()         || '#a7a7a7';
 
         // Torque chart: richer tooltip with motor specs
         const torqueTip = {
             trigger: 'axis',
-            backgroundColor: 'rgba(15,23,42,0.9)', borderColor: '#374151',
-            textStyle: { color: '#f3f4f6' }, axisPointer: { type: 'cross' },
+            backgroundColor: tooltipBg, borderColor: borderColor,
+            textStyle: { color: textColor }, axisPointer: { type: 'cross' },
             formatter: (params) => {
-                let html = `<div style="font-weight:bold;margin-bottom:8px;border-bottom:1px solid #374151;padding-bottom:5px;">Speed: ${params[0].axisValue} mm/s</div>`;
+                let html = `<div style="font-weight:bold;margin-bottom:8px;border-bottom:1px solid ${borderColor};padding-bottom:5px;">Speed: ${params[0].axisValue} mm/s</div>`;
                 params.forEach(p => {
                     const motor = this.torqueChart.motors?.find(m => m.brandModel === p.seriesName);
                     if (!motor) return;
@@ -78,7 +112,7 @@ export class Simulation {
                             <span style="width:10px;height:10px;border-radius:50%;background:${p.color}"></span>
                             ${p.seriesName} <span style="margin-left:auto;">${p.value[1]} N·cm</span>
                         </div>
-                        <div style="font-size:0.75rem;color:#9CA3AF;margin-left:16px;">
+                        <div style="font-size:0.75rem;color:${labelColor};margin-left:16px;">
                             ${motor.inductanceMH}mH | ${motor.resistanceOhms}Ω | ${motor.ratedCurrentA}A rated
                         </div>
                     </div>`;
@@ -87,10 +121,18 @@ export class Simulation {
             }
         };
 
+        const base = this._baseOpt('Torque (N·cm)', labelColor, gridColor);
+        base.tooltip = { ...base.tooltip, backgroundColor: tooltipBg, borderColor: borderColor, textStyle: { color: textColor } };
+
         this.torqueChart.setOption({ ...this._baseOpt('Torque (N·cm)', labelColor, gridColor), tooltip: torqueTip });
         this.powerChart.setOption(this._baseOpt('Power (W)', labelColor, gridColor));
         this.currentChart?.setOption(this._baseOpt('Current (A)', labelColor, gridColor));
         this.bemfChart?.setOption(this._baseOpt('Back-EMF (V)', labelColor, gridColor));
+        this.impedanceChart?.setOption(this._baseOpt('Impedance |Z| (Ω)', labelColor, gridColor));
+        const effOpt = this._baseOpt('Efficiency (%)', labelColor, gridColor);
+        effOpt.yAxis.min = 0; effOpt.yAxis.max = 100;
+        this.efficiencyChart?.setOption(effOpt);
+        this.copperLossChart?.setOption(this._baseOpt('Copper Loss I²R (W)', labelColor, gridColor));
     }
 
     updateThemeColors() {
@@ -105,6 +147,9 @@ export class Simulation {
             this.powerChart?.resize();
             this.currentChart?.resize();
             this.bemfChart?.resize();
+            this.impedanceChart?.resize();
+            this.efficiencyChart?.resize();
+            this.copperLossChart?.resize();
         }, 10);
     }
 
@@ -124,6 +169,7 @@ export class Simulation {
         const rpsValues = Array.from({ length: Math.ceil(MAX_RPS / RPS_STEP) + 1 }, (_, i) => i * RPS_STEP);
 
         const torqueSeries = [], powerSeries = [], currentSeries = [], bemfSeries = [];
+        const impedanceSeries = [], efficiencySeries = [], copperLossSeries = [];
         this.torqueChart.motors = selectedMotors;
         this.powerChart.motors  = selectedMotors;
 
@@ -134,7 +180,7 @@ export class Simulation {
             const eCurrent       = motor.maxDriveCurrentA ?? motor.ratedCurrentA;
             const calcCurrent    = motor.useRms ? eCurrent * 0.707 : eCurrent;
 
-            const tPts = [], pPts = [], cPts = [], bPts = [];
+            const tPts = [], pPts = [], cPts = [], bPts = [], zPts = [], ePts = [], clPts = [];
             rpsValues.forEach(rps => {
                 const spd   = rps * (ePulley * 2);
                 const state = this._motorState(motor, eVoltage, calcCurrent, rps, driverMode, holdRatio);
@@ -143,6 +189,21 @@ export class Simulation {
                 pPts.push([+spd.toFixed(2), +state.elecPower.toFixed(4)]);
                 cPts.push([+spd.toFixed(2), +state.iActual.toFixed(4)]);
                 bPts.push([+spd.toFixed(2), +state.vBemf.toFixed(4)]);
+
+                // Impedance |Z| = sqrt(R² + X²)
+                const fCoil = rps * (360 / (motor.stepAngleDeg || 1.8)) / 4;
+                const X = 2 * Math.PI * fCoil * (motor.inductanceMH / 1000);
+                const Z = Math.sqrt(motor.resistanceOhms ** 2 + X ** 2);
+                zPts.push([+spd.toFixed(2), +Z.toFixed(4)]);
+
+                // Efficiency η = Pmech / Pelec  (%)
+                const eta = state.elecPower > 0.001
+                    ? Math.min(100, (state.mechPower / state.elecPower) * 100)
+                    : 0;
+                ePts.push([+spd.toFixed(2), +Math.max(0, eta).toFixed(2)]);
+
+                // Copper loss I²R  (W)
+                clPts.push([+spd.toFixed(2), +(state.copperLoss || 0).toFixed(4)]);
             });
 
             const s = (data) => ({ name: motor.brandModel, type: 'line', data, itemStyle: { color } });
@@ -150,6 +211,9 @@ export class Simulation {
             powerSeries.push(s(pPts));
             currentSeries.push(s(cPts));
             bemfSeries.push(s(bPts));
+            impedanceSeries.push(s(zPts));
+            efficiencySeries.push(s(ePts));
+            copperLossSeries.push(s(clPts));
         });
 
         // Required torque mark line
@@ -185,6 +249,9 @@ export class Simulation {
         this.powerChart.setOption({ series: powerSeries, xAxis: { max: maxX } }, { replaceMerge: ['series'] });
         this.currentChart?.setOption({ series: currentSeries, legend, xAxis: { max: maxX }, yAxis: { min: 0 } }, { replaceMerge: ['series'] });
         this.bemfChart?.setOption({ series: bemfSeries, legend, xAxis: { max: maxX }, yAxis: { min: 0 } }, { replaceMerge: ['series'] });
+        this.impedanceChart?.setOption({ series: impedanceSeries, legend, xAxis: { max: maxX }, yAxis: { min: 0 } }, { replaceMerge: ['series'] });
+        this.efficiencyChart?.setOption({ series: efficiencySeries, legend, xAxis: { max: maxX }, yAxis: { min: 0, max: 100 } }, { replaceMerge: ['series'] });
+        this.copperLossChart?.setOption({ series: copperLossSeries, legend, xAxis: { max: maxX }, yAxis: { min: 0 } }, { replaceMerge: ['series'] });
     }
 
     async copyChartToClipboard(params, motors) {
@@ -313,5 +380,33 @@ export class Simulation {
     /** Rotor inertia torque [N·cm] */
     _inertiaTorque(acceleration, pulleySize, inertia) {
         return (acceleration * Math.PI / pulleySize) * (inertia / 100000);
+    }
+
+    /**
+     * Returns static electrical analysis for a motor at given operating conditions.
+     * Used to populate the advanced stats strip.
+     */
+    getMotorAnalysis(motor, inputVoltage, pulleySize) {
+        const { inductanceMH, resistanceOhms: R, ratedCurrentA, torqueNCm } = motor;
+        const L = inductanceMH / 1000; // H
+        const circum = pulleySize * 2; // mm per motor revolution
+
+        // Back-EMF constant Ke [V·s/rad], then converted to V/(mm/s)
+        const Ke_rad = torqueNCm / (100 * Math.SQRT2 * ratedCurrentA);
+        const Ke_mms = Ke_rad * 2 * Math.PI / circum;
+
+        // Torque constant Kt [N·cm/A] (bipolar: divide by √2)
+        const Kt = torqueNCm / (ratedCurrentA * Math.SQRT2);
+
+        // Electrical time constant τ = L/R [ms]
+        const tau_ms = (L / R) * 1000;
+
+        // Rated copper loss at full current I²R [W]
+        const Prated = ratedCurrentA * ratedCurrentA * R;
+
+        // Theoretical EMF-limited speed [mm/s]: where back-EMF = supply voltage
+        const speedLimit = Ke_mms > 0 ? inputVoltage / Ke_mms : Infinity;
+
+        return { Ke_mVperMms: Ke_mms * 1000, Kt_NcmA: Kt, tau_ms, Prated_W: Prated, speedLimit_mms: speedLimit };
     }
 }
